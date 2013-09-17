@@ -4,10 +4,12 @@
 *.o
 *.pdf
 *.svg
+*.tar
 *.xml
 Demo
-Tags
+Fiducials_Photos
 Map_Test
+Tags
 Video_Capture
 html
 latex
