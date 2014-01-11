@@ -3,19 +3,21 @@
 #if !defined(MAP_H_INCLUDED)
 #define MAP_H_INCLUDED 1
 
-/// @brief *Map* is the representation of a fiducial marker map.
-typedef struct Map__Struct *Map;
-
-#include "Arc.h"
-#include "Camera_Tag.h"
 #include "File.h"
 #include "List.h"
 #include "Location.h"
-#include "Map.h"
 #include "Table.h"
-#include "Tag.h"
 #include "Unsigned.h"
 
+/// @brief *Map* is the representation of a fiducial marker map.
+typedef struct Map__Struct *Map;
+#include "Tag.h"
+#include "Camera_Tag.h"
+#include "Arc.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef void (*Map_Tag_Announce_Routine)(void *object, Integer id,
   Double x, Double y, Double z, Double twist, Double dx, Double dy, Double dz);
 
@@ -66,11 +68,11 @@ extern Double Map__distance_per_pixel(Map map, Unsigned id);
 extern Map Map__new(
   void *announce_object, Map_Tag_Announce_Routine announce_routine);
 extern Map Map__read(File in_file);
-extern Map Map__restore(String file_name);
-extern void Map__save(Map map, String file_name);
+extern Map Map__restore(const char * file_name);
+extern void Map__save(Map map, const char * file_name);
 extern void Map__sort(Map map);
 extern void Map__svg_write(
-  Map map, String svg_base_name, List /*<Location>*/ locations);
+  Map map, const char * svg_base_name, List /*<Location>*/ locations);
 extern void Map__tag_heights_xml_read(Map map, File xml_in_file);
 extern void Map__tag_announce(void *object, Integer id,
   Double x, Double y, Double z, Double twist, Double dx, Double dy, Double dz);
@@ -78,4 +80,7 @@ extern Tag Map__tag_lookup(Map map, Unsigned tag_id);
 extern void Map__update(Map map);
 extern void Map__write(Map map, File out_file);
 
+#ifdef __cplusplus
+}
+#endif
 #endif // !defined(MAP_H_INCLUDED)
