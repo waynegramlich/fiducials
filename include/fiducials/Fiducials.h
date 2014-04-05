@@ -4,6 +4,7 @@
 #define FIDUCIALS_H_INCLUDED 1
 
 typedef struct Fiducials__Struct *Fiducials;
+typedef struct Fiducials_Create__Struct *Fiducials_Create;
 typedef struct Fiducials_Results__Struct *Fiducials_Results;
 
 #include <assert.h>
@@ -66,6 +67,8 @@ struct Fiducials__Struct {
     CV_Image gray_image;
     CV_Scalar green;
     CV_Size image_size;
+    Double last_x;
+    Double last_y;
     Fiducials_Location_Announce_Routine location_announce_routine;
     List /* <Location> */ locations;
     File log_file;
@@ -96,6 +99,7 @@ struct Fiducials__Struct {
 
 struct Fiducials_Results__Struct {
     Logical map_changed;
+    Logical image_interesting;
 };
 
 extern void Fiducials__arc_announce(void *announce_object,
