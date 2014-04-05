@@ -873,7 +873,7 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 			    // Record the maximum *camera_diagonal*:
 			    Double camera_diagonal = camera_tag->diagonal;
 			    Double diagonal =
-			       camera_diagonal * tag->distance_per_pixel;
+			      camera_diagonal;
 			    if (diagonal  > tag->diagonal) {
 				tag->diagonal = diagonal;
 			    }
@@ -939,7 +939,8 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 	    //File__format(log_file,
 	    //  "[%d]:polar_distance=%f polar_angle=%f\n", index,
 	    //  polar_distance, polar_angle * 180.0 / pi);
-	    Double floor_distance = polar_distance * tag->distance_per_pixel;
+	    Double floor_distance = 
+	      polar_distance * tag->world_diagonal / tag->diagonal;
 	    Double angle =
 	      Double__angle_normalize(polar_angle + pi - camera_tag->twist);
 	    //File__format(log_file,
