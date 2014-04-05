@@ -141,19 +141,31 @@ void Fiducials__image_show(Fiducials fiducials, Logical show) {
 }
 
 Fiducials Fiducials__create(
-  CV_Image original_image, String_Const fiducials_path,
-  String_Const lens_calibrate_file_name, void *announce_object,
-  Fiducials_Arc_Announce_Routine arc_announce_routine,
-  Fiducials_Location_Announce_Routine location_announce_routine,
-  Fiducials_Tag_Announce_Routine tag_announce_routine,
-  String_Const log_file_name, String_Const map_base_name,
-  String_Const tag_heights_file_name) {
+  CV_Image original_image, Fiducials_Create fiducials_create)
+{
     // Create *image_size*:
     Unsigned width = CV_Image__width_get(original_image);
     Unsigned height = CV_Image__height_get(original_image);
     CV_Size image_size = CV_Size__create(width, height);
     CV_Memory_Storage storage = CV_Memory_Storage__create(0);
 
+    // Grab some values from *fiducials_create*:
+    String_Const fiducials_path = fiducials_create->fiducials_path;
+    String_Const lens_calibrate_file_name =
+      fiducials_create->lens_calibrate_file_name;
+    Memory announce_object = fiducials_create->announce_object;
+    Fiducials_Arc_Announce_Routine arc_announce_routine =
+      fiducials_create->arc_announce_routine;
+    Fiducials_Location_Announce_Routine location_announce_routine =
+      fiducials_create->location_announce_routine;
+    Fiducials_Tag_Announce_Routine tag_announce_routine =
+      fiducials_create->tag_announce_routine;
+    String_Const log_file_name = fiducials_create->log_file_name;
+    String_Const map_base_name = fiducials_create->map_base_name;
+    String_Const tag_heights_file_name =
+      fiducials_create->tag_heights_file_name;
+
+    // Get *log_file* open if *log_file_name* is not null:
     File log_file = stderr;
     if (log_file_name != (String_Const)0) {
 	String full_log_file_name =
@@ -161,7 +173,6 @@ Fiducials Fiducials__create(
 	log_file = File__open(log_file_name, "w");
 	String__free(full_log_file_name);
     }
-
     File__format(log_file, "CV width=%d CV height = %d\n", width, height);
 
     Integer term_criteria_type =
@@ -351,12 +362,9 @@ Fiducials Fiducials__create(
     }
 
     // Create the *map*:
-    String full_tag_heights_file_name =
-      String__format("%s/%s", fiducials_path, tag_heights_file_name);
     Map map = Map__create(fiducials_path, map_base_name, announce_object,
       arc_announce_routine, tag_announce_routine,
-      full_tag_heights_file_name, "Fiducials__new:Map__create");
-    String__free(full_tag_heights_file_name);
+      tag_heights_file_name, "Fiducials__new:Map__create");
 
     Fiducials_Results results =
       Memory__new(Fiducials_Results, "Fiducials__create");
@@ -879,6 +887,7 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 			       camera_diagonal * tag->distance_per_pixel;
 			    if (diagonal  > tag->diagonal) {
 				tag->diagonal = diagonal;
+                                tag->updated = (Logical)1;
 			    }
 
 			    // Append *camera_tag* to *camera_tags*:
@@ -1021,8 +1030,11 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 
 	// Always announce *current_visible* as visible:
 	current_visible->visible = (Logical)1;
-	Map__tag_announce(map, current_visible,
-	  (Logical)1, original_image, sequence_number);
+        if( current_visible->updated ) {
+	    Map__tag_announce(map, current_visible,
+	        (Logical)1, original_image, sequence_number);
+            current_visible->updated = (Logical)0;
+        }
     }
 
     // Identifiy tags that are no longer visible:
@@ -1051,7 +1063,7 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 	// *current_visible* is null if it was not found:
 	if (current_visible == (Tag)0) {
 	    // Not found => announce the tag as no longer visible:
-	    previous_visible->visible = (Logical)1;
+	    previous_visible->visible = (Logical)0;
 	    Map__tag_announce(map,
 	      previous_visible, (Logical)0, original_image, sequence_number);
 	}
@@ -1649,4 +1661,21 @@ void Fiducials__tag_record(Unsigned direction, CV_Point2D32F_Vector vector) {
     //if trace
        //call d@(form@("%p%<=record@Tag(T%d%, *)\n\") % f@(indent) / f@(tag.id))
 }
-		  
+
+static struct Fiducials_Create__Struct fiducials_create_struct =
+{
+    (String_Const)0,				// fiducials_path
+    (String_Const)0,				// lens_calibrate_file_name
+    (void *)0,					// announce_object
+    (Fiducials_Arc_Announce_Routine)0,		// arc_announce_routine
+    (Fiducials_Location_Announce_Routine)0,	// location_announce_routine
+    (Fiducials_Tag_Announce_Routine)0,		// tag_announce_routine
+    (String_Const)0,				// log_file_name
+    (String_Const)0,				// map_base_name
+    (String_Const)0,				// tag_heights_file_name
+};
+
+Fiducials_Create Fiducials_Create__one_and_only(void)
+{
+    return &fiducials_create_struct;
+}
