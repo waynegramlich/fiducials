@@ -391,6 +391,8 @@ Fiducials Fiducials__create(
     fiducials->gray_image = CV_Image__create(image_size, CV__depth_8u, 1);
     fiducials->green = CV_Scalar__rgb(0.0, 255.0, 0.0);
     fiducials->image_size = image_size;
+    fiducials->last_x = 0.0;
+    fiducials->last_y = 0.0;
     fiducials->location_announce_routine = location_announce_routine;
     fiducials->locations =
       List__new("Fiducials__create:List__new:locations"); // <Location>
@@ -824,7 +826,8 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 			tag_bytes[i] = byte;
 		    }
 		    if (debug_index == 11) {
-			File__format(log_file, "dir=%d Tag[0]=0x%x Tag[1]=0x%x\n",
+			File__format(log_file,
+			  "dir=%d Tag[0]=0x%x Tag[1]=0x%x\n",
 			  direction_index, tag_bytes[0], tag_bytes[1]);
 		    }
 
@@ -881,7 +884,7 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 			    // Record the maximum *camera_diagonal*:
 			    Double camera_diagonal = camera_tag->diagonal;
 			    Double diagonal =
-			       camera_diagonal * tag->distance_per_pixel;
+			      camera_diagonal;
 			    if (diagonal  > tag->diagonal) {
 				tag->diagonal = diagonal;
                                 tag->updated = (Logical)1;
@@ -924,6 +927,8 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 	}
     }
 
+    List__trim(locations, 0);
+    results->image_interesting = (Logical)0;
     if (camera_tags_size > 0) {
 	Double pi = 3.14159265358979323846264;
 	Unsigned half_width = CV_Image__width_get(gray_image) >> 1;
@@ -948,7 +953,8 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 	    //File__format(log_file,
 	    //  "[%d]:polar_distance=%f polar_angle=%f\n", index,
 	    //  polar_distance, polar_angle * 180.0 / pi);
-	    Double floor_distance = polar_distance * tag->distance_per_pixel;
+	    Double floor_distance = 
+	      polar_distance * tag->world_diagonal / tag->diagonal;
 	    Double angle =
 	      Double__angle_normalize(polar_angle + pi - camera_tag->twist);
 	    //File__format(log_file,
@@ -990,6 +996,16 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 	    //  closest_location->x, closest_location->y,
 	    //  closest_location->bearing * 180.0 / pi,
 	    //  closest_location->goodness, closest_location->index);
+
+	    Double change_dx = closest_location->x - fiducials->last_x;
+	    Double change_dy = closest_location->y - fiducials->last_y;
+	    Double change = Double__square_root(
+	      change_dx * change_dx + change_dy * change_dy);
+	    if (change > 0.1) {
+		results->image_interesting = (Logical)1;
+	    }
+	    fiducials->last_x = closest_location->x;
+	    fiducials->last_y = closest_location->y;
 
 	    // send rviz marker message here
 	    File__format(log_file,
