@@ -40,6 +40,9 @@ int main(int arguments_size, char *arguments[]) {
       List__new("Demo:main:List__new:image_file_names");
     String lens_calibrate_file_name = (String)0;
     String log_file_name = (String)0;
+    String map_file_name = (String)0;
+    String map_base_name = (String)0;
+    Logical map_update_enable = (Logical)1;
     //File__format(stdout, "Hello\n");
     if (arguments_size <= 1) {
 	File__format(stderr, "Usage: Demo lens.txt *.pnm\n");
@@ -56,12 +59,26 @@ int main(int arguments_size, char *arguments[]) {
 	    } else if (size > 4 && String__equal(argument + size - 4, ".pnm")) {
 		List__append(image_file_names,
 		  argument, "Demo:main:List__append:image_file_names");
+	    } else if (size > 4 && String__equal(argument + size - 4, ".ppm")) {
+		List__append(image_file_names,
+		  argument, "Demo:main:List__append:image_file_names");
 	    } else if (size > 4 && String__equal(argument + size - 4, ".chk")) {
 		// Do nothing:
+	    } else if (size > 4 && String__equal(argument + size - 4, ".xml")) {
+		map_file_name = argument;
+		Unsigned map_file_name_size = String__size(map_file_name);
+		map_base_name = String__format("%s", map_file_name);
+		if (map_file_name_size >= 4) {
+		    map_base_name[map_file_name_size - 4] = '\0';
+		    map_update_enable = (Logical)0;
+		}
 	    } else {
 		File__format(stderr, "Unrecoginized file '%s'\n", argument);
 	    }
 	}
+    }
+    if (map_base_name == (String)0) {
+	map_base_name = "Demo_Map";
     }
 
     Unsigned size = List__size(image_file_names);
@@ -81,7 +98,8 @@ int main(int arguments_size, char *arguments[]) {
 	  Fiducials__location_announce;
 	fiducials_create->tag_announce_routine = Fiducials__tag_announce;
 	fiducials_create->log_file_name = log_file_name;
-	fiducials_create->map_base_name = (String_Const)"Demo_Map";
+	fiducials_create->map_base_name = (String_Const)map_base_name;
+	fiducials_create->map_update_enable = map_update_enable;
 	fiducials_create->tag_heights_file_name =
 	  (String_Const)"Tag_Heights.xml";
 	

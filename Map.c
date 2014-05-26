@@ -322,19 +322,19 @@ Map Map__create(String_Const file_path, String_Const file_base,
     // Read in the contents of *map_heights_file_name* into *map*:
     Map__tag_heights_xml_read(map, tag_heights_file_name);
 
-    // Restore *map* from "*map_path*/*map_base*{0,1}.xml".
+    // Restore *map* from "*map_path*/*map_base*{,1}.xml".
     // We try to read "...1.xml" first, followed by "...0.xml":
     String full_map_file_name =
       String__format("%s/%s1.xml", file_path, file_base);
     File in_file = File__open(full_map_file_name, "r");
     if (in_file == (File)0) {
-	// We failed to open "...1.xml"; now try "...0.xml":
+	// We failed to open "...1.xml"; now try "....xml":
 	String__free(full_map_file_name);
 	String full_map_file_name =
-	  String__format("%s/%s0.xml", file_path, file_base);
+	  String__format("%s/%s.xml", file_path, file_base);
 	in_file = File__open(full_map_file_name, "r");
 	if (in_file != (File)0) {
-	    // We opened "...0.xml", read it in:
+	    // We opened "....xml", read it in:
 	    Map__restore(map, in_file);
 	    File__close(in_file);
 	}
@@ -353,9 +353,6 @@ Map Map__create(String_Const file_path, String_Const file_base,
 /// *Map__free*() will release the storage associaed with *map*.
 
 void Map__free(Map map) {
-    // Save the map:
-    Map__save(map);
-
     // Release all the *Arc*'s:
     List /* <Arc> */ all_arcs = map->all_arcs;
     Unsigned arcs_size = List__size(all_arcs);
@@ -499,6 +496,11 @@ void Map__svg_write(Map map, const String svg_base_name, List locations) {
 	Tag tag = (Tag)List__fetch(all_tags, index);
 	Tag__bounding_box_update(tag, bounding_box);
     }
+    Unsigned locations_size = List__size(locations);
+    for (Unsigned index = 0; index < locations_size; index++) {
+	Location location = (Location)List__fetch(locations, index);
+	Location__bounding_box_update(location, bounding_box);
+    }
 
     // Open the Scalable Vector Graphics file:
     SVG svg = SVG__open(svg_base_name, 8.0, 10.5, 1.0, 1.0, "in");
@@ -528,7 +530,6 @@ void Map__svg_write(Map map, const String svg_base_name, List locations) {
 
     }
 
-    Unsigned locations_size = List__size(locations);
     Double last_x = 0.0;
     Double last_y = 0.0;
     for (Unsigned index = 0; index < locations_size; index++) {
@@ -553,6 +554,10 @@ void Map__svg_write(Map map, const String svg_base_name, List locations) {
 	SVG__line(svg, x0, y0, x1, y1, "black");
 	SVG__line(svg, x1, y1, x2, y2, "black");
 	SVG__line(svg, x2, y2, x0, y0, "black");
+
+	// Drop an index number down:
+	String index_text = String__format("%d", index);
+	SVG__text(svg, index_text, x, y, "ariel", 15);
 
 	// Draw a line that connects the centers of the triangles:
 	if (index > 0) {

@@ -88,6 +88,7 @@ struct Fiducials__Struct {
     Logical **mappings;
     CV_Image map_x;
     CV_Image map_y;
+    Logical map_update_enable;
     String_Const path;
     List /* <Tag> */ previous_visibles;
     CV_Scalar purple;
@@ -96,6 +97,8 @@ struct Fiducials__Struct {
     Fiducials_Results results;
     CV_Point2D32F_Vector sample_points;
     Unsigned sequence_number;
+    CV_Size size_3x3;
+    CV_Size size_4x4;
     CV_Size size_5x5;
     CV_Size size_m1xm1;
     CV_Memory_Storage storage;
@@ -105,6 +108,7 @@ struct Fiducials__Struct {
     CV_Term_Criteria term_criteria;
     Unsigned weights_index;
     Logical y_flip;
+    CV_Scalar yellow;
 };
 
 struct Fiducials_Create__Struct {
@@ -117,6 +121,7 @@ struct Fiducials_Create__Struct {
     Fiducials_Fiducial_Announce_Routine fiducial_announce_routine;
     String_Const log_file_name;
     String_Const map_base_name;
+    Logical map_update_enable;
     String_Const tag_heights_file_name;
 };
 

@@ -70,15 +70,19 @@ void Camera_Tag__initialize(Camera_Tag camera_tag, Tag tag,
 	switch (direction) {
 	  case 0:
 	    corner_index = (3 - index + 2) & 3;
+	    //corner_index = (3 - index) & 3;
 	    break;
 	  case 1:
 	    corner_index = (3 - index + 1) & 3;
+	    //corner_index = (3 - index + 0) & 3;
 	    break;
 	  case 2:
 	    corner_index = (3 - index + 0) & 3;
+	    //corner_index = (3 - index + 2) & 3;
 	    break;
 	  case 3:
 	    corner_index = (3 - index + 3) & 3;
+	    //corner_index = (3 - index + 1) & 3;
 	    break;
 	  default:
 	    assert(0);
@@ -121,8 +125,8 @@ void Camera_Tag__initialize(Camera_Tag camera_tag, Tag tag,
 		text = "blue";
 		break;
 	      case 3:
-		color = CV_Scalar__rgb(0.0, 255.0, 255.0);
-		text = "cyan";
+		color = CV_Scalar__rgb(255.0, 255.0, 0.0);
+		text = "yellow";
 		break;
 	      default:
 		assert(0);
@@ -165,6 +169,14 @@ void Camera_Tag__initialize(Camera_Tag camera_tag, Tag tag,
     Double dy13 = y1 - y3;
     Double diagonal13 = Double__square_root(dx13 * dx13 + dy13 * dy13);
     Double diagonal = (diagonal02 + diagonal13) / 2.0;
+    //File__format(stderr,
+    //  "Camara_Tag__create: id=%d dx02=%f dy02=%f diag02=%f\n",
+    //  tag->id, dx02, dy02, diagonal02);
+    //File__format(stderr,
+    //  "Camera_Tag__create: id=%d dx13=%f dy13=%f diag13=%f\n",
+    //  tag->id, dx13, dy13, diagonal13);
+    //File__format(stderr, "Camera_Tag__create: id=%d diagonal=%f\n",
+    //  tag->id, diagonal);
 
     // Compute the tag center by averaging for all four corners:
     Double center_x = (x0 + x1 + x2 + x3) / 4.0;

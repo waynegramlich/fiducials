@@ -2,12 +2,18 @@
 
 #include <assert.h>
 
-#include "Location.h"
+#include "Bounding_Box.h"
 #include "Double.h"
-#include "Unsigned.h"
+#include "Location.h"
 #include "Memory.h"
+#include "Unsigned.h"
 
 // *Location* routines:
+
+void Location__bounding_box_update(Location location, Bounding_Box bounding_box)
+{
+    Bounding_Box__update(bounding_box, location->x, location->y);
+}
 
 /// @brief Create a new *Location* object.
 /// @param id is the tag closest to the robot location.

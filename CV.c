@@ -512,7 +512,8 @@ Integer CV_Image__height_get(CV_Image image) {
 
 CV_Image CV_Image__pnm_read(String_Const file_name) {
     Unsigned size = String__size(file_name);
-    assert (String__equal(file_name + size - 4, ".pnm"));
+    assert (String__equal(file_name + size - 4, ".pnm") ||
+      String__equal(file_name + size - 4, ".ppm"));
     CV_Image image = cvLoadImage(file_name, CV_LOAD_IMAGE_UNCHANGED);
     if (image == (CV_Image)0) {
 	File__format(stderr, "Unable to open file '%s'\n", file_name);
