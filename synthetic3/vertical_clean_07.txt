@@ -1,0 +1,10 @@
+cam_fov=90 cam_x=0 cam_y=0 cam_z=0 cam_quat_x=0.707106769 cam_quat_y=0 cam_quat_z=0 cam_quat_w=0.707106769
+id=0 pos_x=0 pos_y=10 pos_z=0 quat_x=1 quat_y=0 quat_z=0 quat_w=-4.37113883e-08
+id=1 pos_x=1.11109436 pos_y=10 pos_z=2.94381928 quat_x=0.781000018 quat_y=2.72991159e-08 quat_z=0.624530971 quat_w=-3.41385942e-08
+id=2 pos_x=0.177822739 pos_y=10 pos_z=-3.91818762 quat_x=-0.999918997 quat_y=5.56380331e-10 quat_z=0.0127284983 quat_w=4.37078462e-08
+id=3 pos_x=3.17324042 pos_y=10 pos_z=-3.28500748 quat_x=-0.836654782 quat_y=2.39420661e-08 quat_z=0.547730625 quat_w=3.65713433e-08
+id=4 pos_x=-4.033216 pos_y=10 pos_z=3.11177993 quat_x=0.779438674 quat_y=2.73842478e-08 quat_z=0.626478553 quat_w=-3.40703465e-08
+id=5 pos_x=3.46437335 pos_y=10 pos_z=2.3014617 quat_x=0.978161216 quat_y=9.08530406e-09 quat_z=0.207847521 quat_w=-4.27567848e-08
+id=6 pos_x=-5.35943842 pos_y=10 pos_z=-0.53965044 quat_x=0.479185909 quat_y=3.83660748e-08 quat_z=0.877713442 quat_w=-2.09458815e-08
+id=7 pos_x=-1.63563824 pos_y=10 pos_z=-1.90903974 quat_x=-0.727727532 quat_y=2.99801677e-08 quat_z=0.685866296 quat_w=3.18099822e-08
+id=8 pos_x=-5.13111401 pos_y=10 pos_z=-3.71261525 quat_x=0.841702759 quat_y=2.36015794e-08 quat_z=0.539941192 quat_w=-3.67919952e-08

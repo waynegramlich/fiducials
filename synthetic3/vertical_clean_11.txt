@@ -1,0 +1,6 @@
+cam_fov=90 cam_x=0 cam_y=0 cam_z=0 cam_quat_x=0.707106769 cam_quat_y=0 cam_quat_z=0 cam_quat_w=0.707106769
+id=0 pos_x=0 pos_y=10 pos_z=0 quat_x=1 quat_y=0 quat_z=0 quat_w=-4.37113883e-08
+id=1 pos_x=-2.28262925 pos_y=10 pos_z=0.211997598 quat_x=-0.00694440585 quat_y=4.37103331e-08 quat_z=0.99997586 quat_w=3.0354963e-10
+id=2 pos_x=-1.12827528 pos_y=10 pos_z=2.03014016 quat_x=0.16119118 quat_y=4.31397851e-08 quat_z=0.986923218 quat_w=-7.04589009e-09
+id=3 pos_x=3.99499083 pos_y=10 pos_z=-2.23284054 quat_x=0.296723425 quat_y=4.17427763e-08 quat_z=0.954963446 quat_w=-1.29701929e-08
+id=4 pos_x=-3.02196383 pos_y=10 pos_z=-3.39807463 quat_x=0.363124788 quat_y=4.07276701e-08 quat_z=0.931740522 quat_w=-1.58726881e-08

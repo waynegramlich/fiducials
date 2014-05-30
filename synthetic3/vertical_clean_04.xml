@@ -1,0 +1,5 @@
+<Map Tags_Count="3" Arcs_Count="0">
+ <Tag Id="0" Diagonal="1.41421356237" Twist="-0.0" X="0.0" Y="-0.0" Hop_Count="0"/>
+ <Tag Id="1" Diagonal="1.41421356237" Twist="-93.629101421" X="-3.70546913" Y="2.92814422" Hop_Count="0"/>
+ <Tag Id="2" Diagonal="1.41421356237" Twist="-151.129069103" X="-1.67806423" Y="2.28575039" Hop_Count="0"/>
+</Map>

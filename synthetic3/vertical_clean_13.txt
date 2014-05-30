@@ -1,0 +1,3 @@
+cam_fov=90 cam_x=0 cam_y=0 cam_z=0 cam_quat_x=0.707106769 cam_quat_y=0 cam_quat_z=0 cam_quat_w=0.707106769
+id=0 pos_x=0 pos_y=10 pos_z=0 quat_x=1 quat_y=0 quat_z=0 quat_w=-4.37113883e-08
+id=1 pos_x=4.84931898 pos_y=10 pos_z=-1.26867533 quat_x=0.917711556 quat_y=1.73642363e-08 quat_z=0.397247404 quat_w=-4.01144469e-08

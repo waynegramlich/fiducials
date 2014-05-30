@@ -6,6 +6,7 @@
 *.o
 *.pdf
 *.tga
+*.png
 *.pnm
 *.svg
 *.tar

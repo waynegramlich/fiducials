@@ -1,0 +1,7 @@
+<Map Tags_Count="5" Arcs_Count="0">
+ <Tag Id="0" Diagonal="1.41421356237" Twist="-0.0" X="0.0" Y="-0.0" Hop_Count="0"/>
+ <Tag Id="1" Diagonal="1.41421356237" Twist="179.204223289" X="-2.28262925" Y="-0.211997598" Hop_Count="0"/>
+ <Tag Id="2" Diagonal="1.41421356237" Twist="-161.447913682" X="-1.12827528" Y="-2.03014016" Hop_Count="0"/>
+ <Tag Id="3" Diagonal="1.41421356237" Twist="-145.478178954" X="3.99499083" Y="2.23284054" Hop_Count="0"/>
+ <Tag Id="4" Diagonal="1.41421356237" Twist="-137.415551404" X="-3.02196383" Y="3.39807463" Hop_Count="0"/>
+</Map>
