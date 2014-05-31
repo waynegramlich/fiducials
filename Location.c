@@ -1,4 +1,4 @@
-// Copyright (c) by Wayne C. Gramlich.  All rights reserved.
+// Copyright (c) 2013-2014 by Wayne C. Gramlich.  All rights reserved.
 
 #include <assert.h>
 
@@ -10,9 +10,38 @@
 
 // *Location* routines:
 
+/// @brief Add locaton (X,Y) to bounding box.
+/// @param location is the *Location* to use.
+/// @param bounding_box is the *Bounding_Box* to update.
+///
+/// *Locaton__bounding_box_update*() will update *bounding_box* with the
+/// (X,Y) location in *location*.
+
 void Location__bounding_box_update(Location location, Bounding_Box bounding_box)
 {
     Bounding_Box__update(bounding_box, location->x, location->y);
+}
+
+/// @brief Return a copy of a *Location*.
+/// @param location to return copy of.
+/// @returns copied *Location*.
+///
+/// *Location__copy*() will return a copy of *location*.
+
+Location Location__copy(Location location) {
+    Location result = Location__new();
+    Location__initialize(result, location->id, location->x, location->y,
+      location->bearing, location->goodness, -1);
+    return result;
+}
+
+/// @brief Release memory for *location*.
+/// @param location to free memory for.
+///
+/// *Location__free*() will release the storage for *location*.
+
+void Location__free(Location location) {
+  //Memory__free((Memory)location);
 }
 
 /// @brief Create a new *Location* object.
@@ -27,9 +56,8 @@ void Location__bounding_box_update(Location location, Bounding_Box bounding_box)
 /// *Location__create*() create and initialize a new *Location* object that
 /// contains *id*, *x*, *y*, *bearing*, *goodness*, and *index*.
 
-Location Location__create(Unsigned id,
+Location Location__initialize(Location location, Unsigned id,
   Double x, Double y, Double bearing, Double goodness, Unsigned index) {
-    Location location = Memory__new(Location, "Location__create");
     location->bearing = bearing;
     location->goodness = goodness;
     location->id = id;
@@ -39,13 +67,15 @@ Location Location__create(Unsigned id,
     return location;
 }
 
-/// @brief Release memory for *location*.
-/// @param location to free memory for.
+/// @brief Return a new *Location*.
+/// @returns a new *Location*.
 ///
-/// *Location__free*() will release the storage for *location*.
+/// *Location__new*() will return a new *Location*.
 
-void Location__free(Location location) {
-  //Memory__free((Memory)location);
+Location Location__new(void)
+{
+    Double big = 1234567890123456789.0;
+    Location location = Memory__new(Location, "Location__new");
+    Location__initialize(location, -1, big, big, big,  big, -1);
+    return location;
 }
-
-

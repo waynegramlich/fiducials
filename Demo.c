@@ -1,4 +1,4 @@
-// Copyright (c) 2013 by Wayne C. Gramlich.  All rights reserved.
+// Copyright (c) 2013-2014 by Wayne C. Gramlich.  All rights reserved.
 
 #include <stdlib.h>
 #include "assert.h"

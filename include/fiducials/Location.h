@@ -3,6 +3,7 @@
 #if !defined(LOCATION_H_INCLUDED)
 #define LOCATION_H_INCLUDED 1
 
+#include "Bounding_Box.h"
 #include "Double.h"
 #include "Unsigned.h"
 
@@ -35,9 +36,13 @@ struct Location__Struct {
 
 };
 
+extern void Location__bounding_box_update(
+  Location location, Bounding_Box bounding_box);
+extern Location Location__copy(Location location);
 extern void Location__free(Location location);
-extern Location Location__create(Unsigned id,
+extern Location Location__initialize(Location location, Unsigned id,
   Double x, Double y, Double bearing, Double goodness, Unsigned index);
+extern Location Location__new(void);
 
 #ifdef __cplusplus
 }

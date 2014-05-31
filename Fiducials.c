@@ -861,6 +861,8 @@ Fiducials Fiducials__create(
       List__new("Fiducials__create:List__new:locations"); // <Location>
     fiducials->locations_path =
       List__new("Fiducials__create:List__new:locations_path"); // <Location>
+    fiducials->locations_pool =
+      List__new("Fiducials__create:List__new:locations_pool"); // <Location>
     fiducials->log_file = log_file;
     fiducials->map = map;
     fiducials->map_x = map_x;
@@ -1395,9 +1397,10 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 
 			    double vertices[4][2];
 			    for (Unsigned index = 0; index < 4; index++) {
-			      CV_Point2D32F pt = CV_Point2D32F_Vector__fetch1(corners, index);
-			      vertices[index][0] = pt->x;
-			      vertices[index][1] = pt->y;
+				CV_Point2D32F pt =
+				  CV_Point2D32F_Vector__fetch1(corners, index);
+				vertices[index][0] = pt->x;
+				vertices[index][1] = pt->y;
 			    }			    
                             fiducials->fiducial_announce_routine(
                                 fiducials->announce_object, tag_id,
@@ -1466,18 +1469,26 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 	}
     }
 
+    // This is where we compute the camera location and twist
+    // from the tag location in the image (i.e. *Camera_Tag*).
+    // If the *Map* is good, all of the computed locations should
+    // be close to one another.
     List__trim(locations, 0);
     results->image_interesting = (Logical)0;
     if (camera_tags_size > 0) {
+	// Compute the image center:
 	Double pi = 3.14159265358979323846264;
 	Double half_width =
 	  ((double)(CV_Image__width_get(gray_image) - 1)) / 2.0;
 	Double half_height =
 	  ((double)(CV_Image__height_get(gray_image) - 1)) / 2.0;
+
 	if (debug_index == 12) {
 	    File__format(log_file,
 	      "half_width=%f half_height=%f\n", half_width, half_height);
 	}
+
+	// Iterate across all of the *camera_tag*'s:
 	for (Unsigned index = 0; index < camera_tags_size; index++) {
 	    Camera_Tag camera_tag = (Camera_Tag)List__fetch(camera_tags, index);
 	    Tag tag = camera_tag->tag;
@@ -1487,6 +1498,9 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 		  index, tag->id, tag->x, tag->y, tag->twist * 180.0 / pi,
 		  tag->world_diagonal);
 	    }
+
+	    // Compute the vector from the tag center in the image to the
+	    // image center of *camera_tag*:
 	    Double camera_dx = half_width - camera_tag->x;
 	    Double camera_dy = half_height - camera_tag->y;
 	    if (debug_index == 12) {
@@ -1495,15 +1509,20 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 	         " camera_diagonal=%f\n", index, camera_dx, camera_dy,
 		 camera_tag->twist * 180.0 / pi, camera_tag->diagonal);
 	    }
+
+	    // Now compute the polar angle and distance from the camera
+	    // tag center to the image center:
 	    Double polar_distance = Double__square_root(
 	      camera_dx * camera_dx + camera_dy * camera_dy);
 	    Double polar_angle = Double__arc_tangent2(camera_dy, camera_dx);
-
 	    if (debug_index == 12) {
 		File__format(log_file,
 		  "[%d]:polar_distance=%f polar_angle=%f\n", index,
 		  polar_distance, polar_angle * 180.0 / pi);
 	    }
+
+	    // Now convert *polar_distance* into a distance on the floor
+	    // in *Map* units (i.e. Meters.):
 	    Double floor_distance = 
 	      polar_distance * tag->world_diagonal / camera_tag->diagonal;
 	    Double angle = Double__angle_normalize(polar_angle +
@@ -1513,24 +1532,31 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 		  "[%d]:floor_distance=%f angle=%f rad_angle=%f\n",
 		  index, floor_distance, angle * 180.0 / pi, angle);
 	    }
+
+	    // Now compute the cameral (X/Y/Bearing) from all of this:
 	    Double x = tag->x + floor_distance * Double__cosine(angle);
 	    Double y = tag->y + floor_distance * Double__sine(angle);
 	    Double bearing =
 	      Double__angle_normalize(tag->twist - camera_tag->twist);
-
-	    // FIXME: Kludge,  There is a sign error somewhere in the code
-	    // causes the "sign" on the X axis to be inverted.  We kludge
-	    // around the problem with the following disgusting code:
-	    //bearing = Double__angle_normalize(bearing - pi / 2.0);
-	    //bearing = -bearing;
-	    //bearing = Double__angle_normalize(bearing + pi / 2.0);
-
 	    if (debug_index == 12) {
 		File__format(log_file, "[%d]:x=%f:y=%f:bearing=%f\n",
 		  index, x, y, bearing * 180.0 / pi);
 	    }
+
+	    // Stuff the location into *locations*:
+	    // FIXME: Memory leak!!!
+	    Location location = (Location)0;
 	    Unsigned location_index = List__size(locations);
-	    Location location = Location__create(tag->id,
+	    List /* <Location> */ locations_pool = fiducials->locations_pool;
+	    if (location_index >= List__size(locations_pool)) {
+		location = Location__new();
+		List__append(locations_pool,
+		  (Memory)location, "Fiducials:location_pool append");
+	    } else {
+		location =
+		  (Location)List__fetch(locations_pool, location_index);
+	    }
+	    Location__initialize(location, tag->id,
 	      x, y, bearing, floor_distance, location_index);
 	    List__append(locations,
 	      (Memory)location, "Fiducials__process:locations");
@@ -1560,6 +1586,7 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 
 	if (closest_location != (Location)0) {
 	    List /* <Location> */ locations_path = fiducials->locations_path;
+	    closest_location = Location__copy(closest_location);
 	    List__append(locations_path, (Memory)closest_location,
 	     "Fiducials__create:List__append:locations");
 	    File__format(log_file,

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 by Wayne C. Gramlich.  All rights reserved.
+// Copyright (c) 2013-2014 by Wayne C. Gramlich.  All rights reserved.
 
 #if !defined(FIDUCIALS_H_INCLUDED)
 #define FIDUCIALS_H_INCLUDED 1
@@ -81,6 +81,7 @@ struct Fiducials__Struct {
     Fiducials_Fiducial_Announce_Routine fiducial_announce_routine;
     List /* <Location> */ locations;
     List /* <Location> */ locations_path;
+    List /* <Location> */ locations_pool;
     File log_file;
     Map map;
     CV_Point origin;
