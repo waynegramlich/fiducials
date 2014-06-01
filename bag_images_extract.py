@@ -16,22 +16,27 @@ import sys
 arguments = sys.argv
 del arguments[0]
 arguments_size = len(arguments)
-if arguments_size == 0:
-    print("Usage: bag_images_extract.py bag_file_name [images_directory]")
+if arguments_size < 1:
+    print("Usage: bag_images_extract.py " + \
+      "bag_file_name [topic] [images_directory]")
+    print("Default topic: /pgr_camera_node/image_color")
 else:
-
-    # Default directory is "."
+    # Set defaults:
     directory = "."
-    if arguments_size >= 2:
-	directory = arguments[1]
+    topic_name = "/pgr_camera_node/image_color"
+    
+    # Grab the command line arguments:
+    bag_file_name = arguments[0]
+    if arguments_size > 1:
+	topic_name = arguments[1]
+    if arguments_size > 2:
+	directory = arguments[2]
 
     # Open the bag file:
-    bag_file_name = arguments[0]
     bag = rosbag.Bag(bag_file_name)
     bridge = CvBridge()
 
     # Sweep through messages that match *topic_name*:
-    topic_name = "/fiducials_localization/interesting_images"
     index = 0
     previous_time = None
     for topic, msg, t in bag.read_messages(topic_name):

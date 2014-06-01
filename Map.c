@@ -505,7 +505,7 @@ void Map__svg_write(Map map, const String svg_base_name, List locations) {
     // Open the Scalable Vector Graphics file:
     SVG svg = SVG__open(svg_base_name, 8.0, 10.5, 1.0, 1.0, "in");
 
-    SVG__cartesian_scale(svg, 8.0, 10.5, bounding_box);
+    SVG__cartesian_scale(svg, 8.0 - 2.0, 10.5 - 2.0, bounding_box);
 
     // Draw the X/Y axes:
     String color = "cyan";
