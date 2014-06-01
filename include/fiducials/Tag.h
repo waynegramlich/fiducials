@@ -79,8 +79,8 @@ struct Tag__Struct {
     ///@brief True if rest of *Tag* is initialized.
     Logical initialized;
 
-    /// @brief Distance from origin in hops:
-    Unsigned hop_count;
+    /// @brief Distance from origin in hops.  -1 means not in spanning tree.
+    Integer hop_count;
 
     /// @brief Tag identifier.
     Unsigned id;

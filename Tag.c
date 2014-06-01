@@ -69,7 +69,7 @@ Tag Tag__create(Unsigned id, Map map) {
     tag->twist = (Double)0.0;
     tag->arcs = List__new("Tag__create:List__new:arcs"); // <Arc>
     tag->diagonal = 0.0;
-    tag->hop_count = 0;
+    tag->hop_count = -1;
     tag->id = id;
     tag->initialized = (Logical)0;
     tag->map = map;

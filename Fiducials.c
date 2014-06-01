@@ -1556,7 +1556,8 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 		location =
 		  (Location)List__fetch(locations_pool, location_index);
 	    }
-	    Location__initialize(location, tag->id,
+	    Logical in_spanning_tree = (Logical)((tag->hop_count >= 0) ? 1 : 0);
+	    Location__initialize(location, tag->id, in_spanning_tree,
 	      x, y, bearing, floor_distance, location_index);
 	    List__append(locations,
 	      (Memory)location, "Fiducials__process:locations");
@@ -1565,23 +1566,9 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 	// Compute closest location:
 	Location closest_location = (Location)0;
 	Unsigned locations_size = List__size(locations);
-	for (Unsigned index = 0; index < locations_size; index++) {
-	    Location location = (Location)List__fetch(locations, index);
-	    if (closest_location == (Location)0) {
-		closest_location = location;
-	    } else {
-		if (location->goodness < closest_location->goodness) {
-		    closest_location = location;
-		}
-	    }
-	    
-	    if (debug_index == 12) {
-		File__format(log_file,
-		  "Fiducials__process:Location: " /* + */
-		  "Location[%d]: x=%f y=%f bearing=%f goodness=%f\n",
-		  location->index, location->x, closest_location->y,
-		  location->bearing * 180.0 / pi, location->goodness);
-	    }
+	if (locations_size > 0) {
+	    List__sort(locations, (List__Compare__Routine)Location__compare);
+	    closest_location = (Location)List__fetch(locations, 0);
 	}
 
 	if (closest_location != (Location)0) {
@@ -1591,10 +1578,11 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 	     "Fiducials__create:List__append:locations");
 	    File__format(log_file,
 	      "Fiducials__process: Closest Location: " /* + */
-	      "x=%f y=%f bearing=%f goodness=%f index=%d\n",
+	      "x=%f y=%f bearing=%f goodness=%f index=%d in_spanning_tree:%d\n",
 	      closest_location->x, closest_location->y,
 	      closest_location->bearing * 180.0 / pi,
-	      closest_location->goodness, closest_location->index);
+	      closest_location->goodness, closest_location->index,
+	      closest_location->in_spanning_tree);
 
 	    Double change_dx = closest_location->x - fiducials->last_x;
 	    Double change_dy = closest_location->y - fiducials->last_y;
@@ -1609,9 +1597,10 @@ Fiducials_Results Fiducials__process(Fiducials fiducials) {
 	    // send rviz marker message here
 	    Double pi = 3.14159265358979323846264;
 	    File__format(log_file,
-	      "Location:: id=%d x=%f y=%f bearing=%f\n",
+	      "Location:: id=%d x=%f y=%f bearing=%f in_spanning_tree=%d\n",
 	      closest_location->id, closest_location->x, closest_location->y,
-	      closest_location->bearing * 180.0 / pi);
+	      closest_location->bearing * 180.0 / pi,
+	      closest_location->in_spanning_tree);
 	    location_announce_routine(fiducials->announce_object,
 	      closest_location->id, closest_location->x, closest_location->y,
 	      /* z */ 0.0, closest_location->bearing);

@@ -25,6 +25,9 @@ struct Location__Struct {
     /// @brief Index counter.
     Unsigned index;
 
+    /// @brief Tag is in map spanning tree.  
+    Logical in_spanning_tree;
+
     /// @brief Bearing in radians.
     Double bearing;
 
@@ -38,10 +41,12 @@ struct Location__Struct {
 
 extern void Location__bounding_box_update(
   Location location, Bounding_Box bounding_box);
+extern Integer Location__compare(Location location1, Location location2);
 extern Location Location__copy(Location location);
 extern void Location__free(Location location);
 extern Location Location__initialize(Location location, Unsigned id,
-  Double x, Double y, Double bearing, Double goodness, Unsigned index);
+  Logical in_spanning_tree, Double x, Double y, Double bearing,
+  Double goodness, Unsigned index);
 extern Location Location__new(void);
 
 #ifdef __cplusplus

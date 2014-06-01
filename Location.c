@@ -22,6 +22,30 @@ void Location__bounding_box_update(Location location, Bounding_Box bounding_box)
     Bounding_Box__update(bounding_box, location->x, location->y);
 }
 
+/// @brief Return sort order of two *Location* objects.
+/// @param location1 is the first *Location* object to compare.
+/// @param location2 is the second *Location* object to compare.
+/// @returns -1, 0, or 1 depending upon sort order.
+///
+/// *Location__compare*() will return -1, 0, or 1 depending upon whether
+/// *location1* sorts before, equal, or after *location2*.
+
+Integer Location__compare(Location location1, Location location2)
+{
+    Integer result = 0;
+    if (location1->in_spanning_tree && !location2->in_spanning_tree) {
+	result = -1;
+    } else if (!location1->in_spanning_tree && location2->in_spanning_tree) {
+	result = 0;
+    } else {
+	result = Double__compare(location1->goodness, location2->goodness);
+	if (result == 0) {
+	    result = Unsigned__compare(location1->id, location2->id);
+	}
+    }
+    return 0;
+}
+
 /// @brief Return a copy of a *Location*.
 /// @param location to return copy of.
 /// @returns copied *Location*.
@@ -30,8 +54,8 @@ void Location__bounding_box_update(Location location, Bounding_Box bounding_box)
 
 Location Location__copy(Location location) {
     Location result = Location__new();
-    Location__initialize(result, location->id, location->x, location->y,
-      location->bearing, location->goodness, -1);
+    Location__initialize(result, location->id, location->in_spanning_tree,
+      location->x, location->y, location->bearing, location->goodness, -1);
     return result;
 }
 
@@ -41,7 +65,8 @@ Location Location__copy(Location location) {
 /// *Location__free*() will release the storage for *location*.
 
 void Location__free(Location location) {
-  //Memory__free((Memory)location);
+    //FIXME: Should actually release the storage!!!
+    //Memory__free((Memory)location);
 }
 
 /// @brief Create a new *Location* object.
@@ -57,10 +82,12 @@ void Location__free(Location location) {
 /// contains *id*, *x*, *y*, *bearing*, *goodness*, and *index*.
 
 Location Location__initialize(Location location, Unsigned id,
-  Double x, Double y, Double bearing, Double goodness, Unsigned index) {
+  Logical in_spanning_tree, Double x, Double y, Double bearing,
+  Double goodness, Unsigned index) {
     location->bearing = bearing;
     location->goodness = goodness;
     location->id = id;
+    location->in_spanning_tree = in_spanning_tree;
     location->index = index;
     location->x = x;
     location->y = y;
@@ -76,6 +103,6 @@ Location Location__new(void)
 {
     Double big = 1234567890123456789.0;
     Location location = Memory__new(Location, "Location__new");
-    Location__initialize(location, -1, big, big, big,  big, -1);
+    Location__initialize(location, -1, (Logical)0, big, big, big, big, -1);
     return location;
 }
